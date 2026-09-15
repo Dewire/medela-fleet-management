@@ -12,7 +12,7 @@ The history and upload **pages** wrap `AppShell fleetNav` so Devices / Firmware 
 
 History has a search field (`filterFirmwareReleases` matches version, notes, and uploader). Rows show notes and **Uploaded by:** plus the staff name in bold (`FirmwareHistorySubtitle`, also used on a device's install history). There is no sort control; history is already newest-first.
 
-Publish collects version and notes only. New releases are stored as all regions and all device types so history and device-update matching still have a catalog row.
+Publish collects version, device type, and notes. New releases are stored as all regions. Device type is one of Freestyle Hands-free, Symphony, or Swing Maxi so device-update matching stays exact.
 
 ## Gotchas
 

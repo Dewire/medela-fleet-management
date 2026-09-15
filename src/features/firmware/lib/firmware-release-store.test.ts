@@ -23,6 +23,7 @@ describe("createFirmwareReleaseStore", () => {
     const published = store.publish(
       {
         version: "v2.5.0",
+        deviceType: "Symphony",
         notes: "New radio",
       },
       "Sarah Chen",
@@ -45,7 +46,7 @@ describe("createFirmwareReleaseStore", () => {
 
     stop();
     store.publish(
-      { version: "v2.5.1", notes: "Patch" },
+      { version: "v2.5.1", deviceType: "Symphony", notes: "Patch" },
       "Sarah Chen",
       new Date("2026-09-10T08:00:00.000Z"),
     );

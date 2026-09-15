@@ -13,11 +13,12 @@ type NativeSelectProps = {
   compact?: boolean;
   highlightWhenSet?: boolean;
   className?: string;
+  required?: boolean;
 };
 
 /**
- * Styled native select used on filter bars. Native is used (not the popup Select)
- * so filter rows stay compact like the Figma prototype.
+ * Styled native select used on filter bars and publish forms. Native is used
+ * (not the popup Select) so rows stay compact like the Figma prototype.
  *
  * The OS chevron sits on the trailing edge; `appearance-none` plus a custom
  * icon lets us inset it so it does not collide with a control beside the field.
@@ -32,6 +33,7 @@ export function NativeSelect({
   compact = false,
   highlightWhenSet = false,
   className,
+  required = false,
 }: NativeSelectProps) {
   const isActive = highlightWhenSet && value !== undefined && value !== "all";
 
@@ -41,12 +43,16 @@ export function NativeSelect({
         compact ? (
           <span className="text-xs font-medium text-muted-foreground">{label}:</span>
         ) : (
-          <Label className="font-semibold text-foreground">{label}</Label>
+          <Label htmlFor={name} className="font-semibold text-foreground">
+            {label}
+          </Label>
         )
       ) : null}
       <div className="relative">
         <select
+          id={name}
           name={name}
+          required={required}
           value={value}
           defaultValue={defaultValue}
           onChange={onChange ? (event) => onChange(event.target.value) : undefined}

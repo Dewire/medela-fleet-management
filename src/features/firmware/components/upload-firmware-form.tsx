@@ -7,16 +7,18 @@ import { useRouter } from "next/navigation";
 import { Textarea } from "@/components/ui/textarea";
 import { getAccountUser } from "@/features/account/lib/current-user";
 import { useFirmwareReleases } from "@/features/firmware/hooks/use-firmware-releases";
+import { PUBLISH_DEVICE_TYPE_OPTIONS } from "@/features/firmware/lib/publish-device-types";
 import { signOffPersonFromName } from "@/features/firmware/lib/sign-off-person";
 import { publishFirmwareSchema } from "@/features/firmware/schemas";
 import { FormField } from "@/features/shell/form-field";
+import { NativeSelect } from "@/features/shell/native-select";
 import { Panel } from "@/features/shell/panel";
 import { PrimaryActionButton } from "@/features/shell/primary-action-button";
 import { SignOffCard } from "@/features/shell/sign-off-card";
 import { parseFormData } from "@/lib/parse-form";
 
 /**
- * Firmware publish form: file dropzone and release notes.
+ * Firmware publish form: file dropzone, device type, and release notes.
  */
 export function UploadFirmwareForm() {
   const router = useRouter();
@@ -75,6 +77,13 @@ export function UploadFirmwareForm() {
           <h3 className="mb-4 font-semibold text-foreground">Release Details</h3>
           <div className="flex flex-col gap-4">
             <FormField label="Version label" name="version" placeholder="v2.4.0" />
+            <NativeSelect
+              label="Device type"
+              name="deviceType"
+              defaultValue=""
+              required
+              options={PUBLISH_DEVICE_TYPE_OPTIONS}
+            />
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-foreground" htmlFor="notes">
                 Release notes
