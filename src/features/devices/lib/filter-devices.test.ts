@@ -46,10 +46,24 @@ describe("filterWorldDevices", () => {
     expect(result).toEqual([]);
   });
 
-  it("matches hospital names through search", () => {
+  it("matches a device ID through search", () => {
+    const result = filterWorldDevices(devices, { ...openFilters, search: "kf-1" });
+    expect(result.map((device) => device.id)).toEqual(["KF-1"]);
+  });
+
+  it("matches a model name through search", () => {
+    const result = filterWorldDevices(devices, { ...openFilters, search: "swing" });
+    expect(result.map((device) => device.id)).toEqual(["KF-2"]);
+  });
+
+  it("does not match a city name", () => {
+    const result = filterWorldDevices(devices, { ...openFilters, search: "berlin" });
+    expect(result).toEqual([]);
+  });
+
+  it("does not match a hospital name", () => {
     const result = filterWorldDevices(devices, { ...openFilters, search: "charité" });
-    expect(result).toHaveLength(1);
-    expect(result[0]?.id).toBe("KF-1");
+    expect(result).toEqual([]);
   });
 });
 

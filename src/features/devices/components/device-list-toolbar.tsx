@@ -44,7 +44,7 @@ export function DeviceListToolbar({
         <SearchField
           value={filters.search}
           onChange={(search) => update({ search })}
-          placeholder="Search ID, city, or hospital"
+          placeholder="Search ID, model"
         />
         <SegmentedControl
           value={filters.status}

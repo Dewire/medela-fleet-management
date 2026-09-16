@@ -43,10 +43,10 @@ describe("suggestFilterRelaxation", () => {
     const result = suggestFilterRelaxation(devices, {
       ...openFilters,
       status: "failed",
-      search: "tokyo",
+      search: "KF-2",
     });
 
-    // Clearing status leaves the Tokyo device; clearing search still matches none.
+    // Clearing status leaves KF-2; clearing search still matches none.
     expect(result).toEqual({ key: "status", facetLabel: "Status", count: 1 });
   });
 
@@ -54,7 +54,7 @@ describe("suggestFilterRelaxation", () => {
     const result = suggestFilterRelaxation(devices, {
       ...openFilters,
       status: "needs-update",
-      search: "tokyo",
+      search: "KF-2",
     });
 
     expect(result?.key).toBe("status");

@@ -3,8 +3,9 @@ import { ALL_FILTER_VALUE as ALL } from "@/lib/filters";
 import type { DeviceFilters, WorldDevice } from "../types";
 
 /**
- * Returns devices matching status and search. `"all"` and an empty search
- * are treated as no-ops so the default view is the full fleet.
+ * Returns devices matching status and search. Search looks at ID and model.
+ * `"all"` and an empty search are treated as no-ops so the default view is
+ * the full fleet.
  *
  * @param devices - Fleet devices to filter
  * @param filters - Status and free-text search
@@ -33,7 +34,6 @@ export function hasActiveDeviceFilters(filters: DeviceFilters): boolean {
 function matchesSearch(device: WorldDevice, search: string): boolean {
   return (
     device.id.toLowerCase().includes(search) ||
-    device.city.toLowerCase().includes(search) ||
-    device.hospital.toLowerCase().includes(search)
+    device.model.toLowerCase().includes(search)
   );
 }

@@ -25,7 +25,7 @@ The `/internal` page wraps `AppShell fill fleetNav`. Feature screens return list
 ## Gotchas
 
 - Status colors are fixed: amber needs-update, green updated, red failed.
-- Search still matches hospital names; hospital is not a separate filter facet.
+- Search matches device ID and model only, not city or hospital.
 - Status is the visible segmented axis, so `describeDeviceFilters` deliberately omits it. Adding it would give one filter two controls.
 - `suggestFilterRelaxation` assumes the current result is empty; it only returns a removal that reveals at least one device, and ties go to the less intentional facet (search is suggested last).
 - Sample data is in-memory only.
