@@ -16,4 +16,9 @@ describe("PUBLISH_DEVICE_TYPE_OPTIONS", () => {
   it("does not include a fleet-wide catch-all type", () => {
     expect(PUBLISH_DEVICE_TYPE_OPTIONS.map(([value]) => value)).not.toContain("All device types");
   });
+
+  it("includes Queen as a selectable catalog model", () => {
+    expect(PUBLISH_DEVICE_TYPES).toContain("Queen");
+    expect(PUBLISH_DEVICE_TYPE_OPTIONS).toContainEqual(["Queen", "Queen"]);
+  });
 });

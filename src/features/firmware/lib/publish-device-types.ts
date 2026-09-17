@@ -6,6 +6,7 @@ export const PUBLISH_DEVICE_TYPES = [
   "Freestyle Hands-free",
   "Symphony",
   "Swing Maxi",
+  "Queen",
 ] as const;
 
 /** A device type the publish form may store on a release. */

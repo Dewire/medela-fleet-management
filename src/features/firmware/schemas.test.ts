@@ -26,6 +26,16 @@ describe("publishFirmwareSchema", () => {
     }
   });
 
+  it("accepts Queen as a device type", () => {
+    const result = publishFirmwareSchema.safeParse({
+      version: "v2.5.0",
+      deviceType: "Queen",
+      notes: "Notes",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects a missing device type", () => {
     const result = publishFirmwareSchema.safeParse({
       version: "v2.5.0",
