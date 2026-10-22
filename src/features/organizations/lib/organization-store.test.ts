@@ -206,4 +206,39 @@ describe("createOrganizationStore", () => {
 
     expect(result).toMatchObject({ ok: false, code: "organization_not_found" });
   });
+
+  it("promotes a directory user to admin", () => {
+    const store = createOrganizationStore(seed);
+    store.addUser("hospital-one", {
+      name: "Priya Nair",
+      email: "priya@hospital.org",
+      role: "user",
+    });
+    const priya = store.getSnapshot()[0]?.users.find((user) => user.email === "priya@hospital.org");
+
+    const result = store.setUserRole("hospital-one", priya?.id ?? "", "admin");
+
+    expect(result).toMatchObject({ ok: true, value: { role: "admin" } });
+  });
+
+  it("does not change an admin's role", () => {
+    const store = createOrganizationStore(seed);
+    store.addUser("hospital-one", {
+      name: "Priya Nair",
+      email: "priya@hospital.org",
+      role: "admin",
+    });
+    const result = store.setUserRole("hospital-one", "user-1", "user");
+
+    expect(result).toMatchObject({ ok: false, code: "admin_locked" });
+    expect(store.getSnapshot()[0]?.users[0]?.role).toBe("admin");
+  });
+
+  it("returns an expected error when the user is missing", () => {
+    const store = createOrganizationStore(seed);
+    expect(store.setUserRole("hospital-one", "missing", "user")).toMatchObject({
+      ok: false,
+      code: "user_not_found",
+    });
+  });
 });

@@ -27,6 +27,7 @@ npm run lint   # ESLint
 | `/internal/firmware` | Firmware history |
 | `/internal/firmware/upload` | Publish a release |
 | `/internal/firmware/[version]` | Release detail (`?deviceType=` required) |
+| `/internal/users` | Hospital users across organisations; invites are prototype messages |
 | `/internal/profile` | Read-only account fixture |
 | `/sales` | Customer organisation list |
 | `/sales/organizations/new` | Redirects to `/sales`; hospitals are added in a modal |
@@ -35,6 +36,7 @@ npm run lint   # ESLint
 | `/biomed` | Devices registered by the fixture hospital |
 | `/biomed/devices/[id]` | One registered device and its hospital token |
 | `/biomed/devices/new` | Redirects to `/biomed`; devices are added in a modal |
+| `/biomed/users` | Hospital users for a Biomed admin; invites are prototype messages |
 | `/biomed/profile` | Biomed account fixture |
 
 There is no real sign-up or authentication route.

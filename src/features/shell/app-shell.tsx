@@ -20,8 +20,8 @@ type AppShellProps = {
    */
   fill?: boolean;
   /**
-   * Render Devices / Firmware history / Upload firmware above the page so
-   * the tab bar stays in one place across those three screens.
+   * Render Devices / Firmware history / Upload firmware / Users above the
+   * page so the tab bar stays in one place across those screens.
    */
   fleetNav?: boolean;
   /** Render the active Sales or Biomed workspace navigation. */

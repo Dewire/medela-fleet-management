@@ -9,9 +9,10 @@ describe("getPortalTabs", () => {
     ]);
   });
 
-  it("keeps Biomed focused on devices", () => {
+  it("keeps Biomed on devices and users", () => {
     expect(getPortalTabs("biomed")).toEqual([
       { id: "devices", label: "Devices", href: "/biomed" },
+      { id: "users", label: "Users", href: "/biomed/users" },
     ]);
   });
 });
@@ -19,6 +20,10 @@ describe("getPortalTabs", () => {
 describe("resolvePortalTab", () => {
   it("keeps Devices selected on the Biomed registration route", () => {
     expect(resolvePortalTab("biomed", "/biomed/devices/new")).toBe("devices");
+  });
+
+  it("selects Users for the Biomed directory", () => {
+    expect(resolvePortalTab("biomed", "/biomed/users")).toBe("users");
   });
 
   it("selects Devices for the Biomed overview", () => {

@@ -10,7 +10,7 @@ import type {
   AddOrganizationUserInput,
   CreateOrganizationInput,
 } from "../schemas";
-import type { Organization, OrganizationUser } from "../types";
+import type { Organization, OrganizationUser, OrganizationUserRole } from "../types";
 
 /**
  * Live organisation directory shared by Sales screens.
@@ -23,6 +23,11 @@ export function useOrganizations(): {
   addUser: (
     organizationId: string,
     input: AddOrganizationUserInput,
+  ) => OrganizationStoreResult<OrganizationUser>;
+  setUserRole: (
+    organizationId: string,
+    userId: string,
+    role: OrganizationUserRole,
   ) => OrganizationStoreResult<OrganizationUser>;
   unseenIds: ReadonlySet<string>;
   acknowledgeOrganization: (organizationId: string) => void;
@@ -46,10 +51,22 @@ export function useOrganizations(): {
       organizationStore.addUser(organizationId, input),
     [],
   );
+  const setUserRole = useCallback(
+    (organizationId: string, userId: string, role: OrganizationUserRole) =>
+      organizationStore.setUserRole(organizationId, userId, role),
+    [],
+  );
   const acknowledgeOrganization = useCallback(
     (organizationId: string) => organizationStore.acknowledgeOrganization(organizationId),
     [],
   );
 
-  return { organizations, addOrganization, addUser, unseenIds, acknowledgeOrganization };
+  return {
+    organizations,
+    addOrganization,
+    addUser,
+    setUserRole,
+    unseenIds,
+    acknowledgeOrganization,
+  };
 }

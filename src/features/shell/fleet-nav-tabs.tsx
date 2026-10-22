@@ -3,24 +3,34 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useFirmwareReleases } from "@/features/firmware/hooks/use-firmware-releases";
+import { useOrganizations } from "@/features/organizations/hooks/use-organizations";
+import { listHospitalDirectory } from "@/features/organizations/lib/list-hospital-directory";
 import { useFleetNavDeviceCount } from "@/features/shell/hooks/use-fleet-nav-device-count";
 import { FLEET_TAB_HREFS, resolveFleetTab, type FleetTab } from "@/features/shell/lib/fleet-tabs";
-import { cn } from "@/lib/utils";
+import { tabCountClass, tabLinkClass } from "@/features/shell/lib/tab-link-class";
 
 const TABS: ReadonlyArray<{ id: FleetTab; label: string; href: string }> = [
   { id: "devices", label: "Devices", href: FLEET_TAB_HREFS.devices },
   { id: "history", label: "Firmware history", href: FLEET_TAB_HREFS.history },
   { id: "upload", label: "Upload firmware", href: FLEET_TAB_HREFS.upload },
+  { id: "users", label: "Users", href: FLEET_TAB_HREFS.users },
 ];
 
 /**
- * Horizontal tabs for the three fleet screens. The Devices tab reads the
+ * Horizontal tabs for the fleet screens. The Devices tab reads the
  * visible device count from the shared store so it follows list filters.
  */
 export function FleetNavTabs() {
   const pathname = usePathname();
   const current = resolveFleetTab(pathname);
   const { count: deviceCount, label: deviceCountLabel } = useFleetNavDeviceCount();
+  const { organizations } = useOrganizations();
+  const { releases } = useFirmwareReleases();
+  const userCount = listHospitalDirectory(organizations).length;
+  const userCountLabel = userCount === 1 ? "1 user" : `${userCount} users`;
+  const releaseCount = releases.length;
+  const releaseCountLabel = releaseCount === 1 ? "1 release" : `${releaseCount} releases`;
 
   return (
     <nav aria-label="Fleet sections" className="mb-4 shrink-0">
@@ -36,30 +46,41 @@ export function FleetNavTabs() {
               href={tab.href}
               role="tab"
               aria-selected={selected}
-              className={cn(
-                "relative flex items-center gap-2 px-3 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-                selected
-                  ? "text-foreground after:absolute after:right-3 after:bottom-0 after:left-3 after:h-0.5 after:rounded-full after:bg-primary"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+              className={tabLinkClass(selected)}
             >
               {tab.label}
               {tab.id === "devices" && deviceCount !== undefined ? (
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-0.5 text-sm font-semibold tabular-nums",
-                    selected ? "bg-black/5 text-foreground" : "bg-black/5 text-muted-foreground",
-                  )}
-                  aria-label={deviceCountLabel}
-                >
-                  {deviceCount}
-                </span>
+                <TabCount count={deviceCount} label={deviceCountLabel ?? `${deviceCount} devices`} selected={selected} />
+              ) : null}
+              {tab.id === "history" ? (
+                <TabCount count={releaseCount} label={releaseCountLabel} selected={selected} />
+              ) : null}
+              {tab.id === "users" ? (
+                <TabCount count={userCount} label={userCountLabel} selected={selected} />
               ) : null}
             </Link>
           );
         })}
       </div>
     </nav>
+  );
+}
+
+function TabCount({
+  count,
+  label,
+  selected,
+}: {
+  count: number;
+  label: string;
+  selected: boolean;
+}) {
+  return (
+    <span
+      className={tabCountClass(selected)}
+      aria-label={label}
+    >
+      {count}
+    </span>
   );
 }

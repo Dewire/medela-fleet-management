@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import type { PortalRole } from "@/features/account/types";
+import { BIOMED_ORGANIZATION } from "@/features/biomed/constants";
+import { useOrganizations } from "@/features/organizations/hooks/use-organizations";
 import { useBiomedNavDeviceCount } from "@/features/shell/hooks/use-fleet-nav-device-count";
 import {
   getPortalTabs,
   resolvePortalTab,
 } from "@/features/shell/lib/portal-tabs";
-import { cn } from "@/lib/utils";
+import { tabCountClass, tabLinkClass } from "@/features/shell/lib/tab-link-class";
 
 /**
  * Horizontal navigation for Sales and Biomed workspaces.
@@ -27,6 +29,13 @@ export function PortalNavTabs({
   const pathname = usePathname();
   const selected = resolvePortalTab(role, pathname);
   const { count: deviceCount, label: deviceCountLabel } = useBiomedNavDeviceCount();
+  const { organizations } = useOrganizations();
+  const hospitalUsers = organizations.find((item) => item.id === BIOMED_ORGANIZATION.id)?.users;
+  const userCount = hospitalUsers?.length;
+  const userCountLabel = userCount === 1 ? "1 user" : `${userCount ?? 0} users`;
+  const organizationCount = organizations.length;
+  const organizationCountLabel =
+    organizationCount === 1 ? "1 organisation" : `${organizationCount} organisations`;
 
   return (
     <nav aria-label={`${role} sections`} className="mb-4 shrink-0">
@@ -40,32 +49,51 @@ export function PortalNavTabs({
                 href={tab.href}
                 role="tab"
                 aria-selected={isSelected}
-                className={cn(
-                  "relative flex items-center gap-2 px-3 py-2.5 text-sm font-semibold whitespace-nowrap transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-                  isSelected
-                    ? "text-foreground after:absolute after:right-3 after:bottom-0 after:left-3 after:h-0.5 after:rounded-full after:bg-primary"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
+                className={tabLinkClass(isSelected)}
               >
                 {tab.label}
+                {role === "sales" && tab.id === "organizations" ? (
+                  <TabCount
+                    count={organizationCount}
+                    label={organizationCountLabel}
+                    selected={isSelected}
+                  />
+                ) : null}
                 {role === "biomed" && tab.id === "devices" && deviceCount !== undefined ? (
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-sm font-semibold tabular-nums",
-                      isSelected ? "bg-black/5 text-foreground" : "bg-black/5 text-muted-foreground",
-                    )}
-                    aria-label={deviceCountLabel}
-                  >
-                    {deviceCount}
-                  </span>
+                  <TabCount
+                    count={deviceCount}
+                    label={deviceCountLabel ?? `${deviceCount} devices`}
+                    selected={isSelected}
+                  />
+                ) : null}
+                {role === "biomed" && tab.id === "users" && userCount !== undefined ? (
+                  <TabCount count={userCount} label={userCountLabel} selected={isSelected} />
                 ) : null}
               </Link>
             );
           })}
         </div>
-        {action ? <div className="mb-2 shrink-0">{action}</div> : null}
+        <div className="mb-2 flex h-11 shrink-0 items-center">{action}</div>
       </div>
     </nav>
+  );
+}
+
+function TabCount({
+  count,
+  label,
+  selected,
+}: {
+  count: number;
+  label: string;
+  selected: boolean;
+}) {
+  return (
+    <span
+      className={tabCountClass(selected)}
+      aria-label={label}
+    >
+      {count}
+    </span>
   );
 }

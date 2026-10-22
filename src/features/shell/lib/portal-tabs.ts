@@ -11,7 +11,10 @@ const PORTAL_TABS: Record<Exclude<PortalRole, "internal">, readonly PortalTab[]>
   sales: [
     { id: "organizations", label: "Organisations", href: "/sales" },
   ],
-  biomed: [{ id: "devices", label: "Devices", href: "/biomed" }],
+  biomed: [
+    { id: "devices", label: "Devices", href: "/biomed" },
+    { id: "users", label: "Users", href: "/biomed/users" },
+  ],
 };
 
 /**
@@ -37,6 +40,7 @@ export function resolvePortalTab(
   role: Exclude<PortalRole, "internal">,
   pathname: string,
 ): string {
+  if (role === "biomed" && pathname.startsWith("/biomed/users")) return "users";
   if (role === "biomed" && pathname.startsWith("/biomed")) return "devices";
   return role === "sales" ? "organizations" : "devices";
 }

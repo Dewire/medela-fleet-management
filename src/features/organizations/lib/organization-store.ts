@@ -7,13 +7,17 @@ import type { Organization, OrganizationUser } from "../types";
 
 import { createdBySalesUser } from "./created-by-sales-user";
 import { displayNameFromEmail } from "./display-name-from-email";
+import { wouldLeaveWithoutAdmin } from "./would-leave-without-admin";
 
 /** Expected organisation-directory failure codes. */
 export type OrganizationStoreErrorCode =
   | "duplicate_organization"
   | "duplicate_email"
   | "admin_required"
-  | "organization_not_found";
+  | "last_admin"
+  | "admin_locked"
+  | "organization_not_found"
+  | "user_not_found";
 
 /** Success or expected failure from an organisation write. */
 export type OrganizationStoreResult<T> =
@@ -144,6 +148,64 @@ export function createOrganizationStore(
       );
       emit();
       return { ok: true, value: user };
+    },
+
+    /**
+     * Changes one hospital user's Admin or User role.
+     *
+     * @param organizationId - Hospital that owns the user
+     * @param userId - Directory user to update
+     * @param role - Role they should have
+     */
+    setUserRole(
+      organizationId: string,
+      userId: string,
+      role: OrganizationUser["role"],
+    ): OrganizationStoreResult<OrganizationUser> {
+      const organization = organizations.find((item) => item.id === organizationId);
+      if (!organization) {
+        return {
+          ok: false,
+          code: "organization_not_found",
+          message: "This organisation no longer exists",
+        };
+      }
+
+      const current = organization.users.find((user) => user.id === userId);
+      if (!current) {
+        return {
+          ok: false,
+          code: "user_not_found",
+          message: "This user is not at this hospital",
+        };
+      }
+      if (current.role === role) return { ok: true, value: current };
+      if (current.role === "admin") {
+        return {
+          ok: false,
+          code: "admin_locked",
+          message: "An admin's role cannot be changed",
+        };
+      }
+      if (wouldLeaveWithoutAdmin(organization.users, userId, role)) {
+        return {
+          ok: false,
+          code: "last_admin",
+          message: "The hospital must keep at least one admin",
+        };
+      }
+
+      const updated = { ...current, role };
+      organizations = organizations.map((item) =>
+        item.id === organizationId
+          ? {
+              ...item,
+              users: item.users.map((user) => (user.id === userId ? updated : user)),
+            }
+          : item,
+      );
+      emit();
+      return { ok: true, value: updated };
     },
   };
 }

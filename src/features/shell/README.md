@@ -4,14 +4,16 @@ Shared chrome: brand-yellow header, grouped lists, list filter controls, auth fr
 
 ## How to use
 
-Wrap authenticated **pages** in `AppShell`. Feature screens should not import it — they return page content only. Use `variant="form"` on firmware publish and detail to constrain the column. Render `SignOffCard` on those pages yourself: publish uses authorising copy, detail uses uploaded-by copy. Use `fill` on list pages so chrome stays put and the list fills the leftover laptop height. Pass `fleetNav` on the three fleet screens so `FleetNavTabs` sits in the same slot above the page; that also locks the viewport so upload uses the same main padding as the lists. Pass `header` on `GroupedList` when title, actions, or filters should sit inside the same card as the rows.
+Wrap authenticated **pages** in `AppShell`. Feature screens should not import it — they return page content only. Use `variant="form"` on firmware publish and detail to constrain the column. Render `SignOffCard` on those pages yourself: publish uses authorising copy, detail uses uploaded-by copy. Use `fill` on list pages so chrome stays put and the list fills the leftover laptop height. Pass `fleetNav` on the fleet screens so `FleetNavTabs` sits in the same slot above the page; that also locks the viewport so upload uses the same main padding as the lists. Pass `header` on `GroupedList` when title, actions, or filters should sit inside the same card as the rows.
 
-`FleetNavTabs` is the Devices / Firmware history / Upload firmware switcher. `resolveFleetTab` picks the selected tab from the path. The Devices tab count lives in `fleetNavCountStore` so the list can update a badge that AppShell renders. The Biomed Devices tab uses `biomedNavCountStore` the same way, so its count stays separate from the internal fleet.
+`FleetNavTabs` is the Devices / Firmware history / Upload firmware / Users switcher. `resolveFleetTab` picks the selected tab from the path. The selected tab uses a yellow tint and a thicker yellow underline so the current section is obvious. The Devices tab count lives in `fleetNavCountStore` so the list can update a badge that AppShell renders. Firmware history shows the published-release count from the firmware catalog. The Biomed Devices tab uses `biomedNavCountStore` the same way, so its count stays separate from the internal fleet.
 
 Pass `portalRole="sales"` or `portalRole="biomed"` so header identity, logo,
 profile, and home links stay inside that workspace. Add `portalNav` on the main
 Sales and Biomed screens to render their role-specific tabs. `portalNavAction`
-places one control on the trailing edge of that tab bar.
+places one control on the trailing edge of that tab bar. That slot is always
+the same height, so the bar does not jump when a tab has no action. The Biomed
+Devices and Users lists share one layout so the header and tabs stay mounted.
 
 ### List toolbars
 

@@ -19,6 +19,10 @@ describe("resolveFleetTab", () => {
     expect(resolveFleetTab("/internal/firmware/v2.4.0")).toBe("history");
   });
 
+  it("selects Users on the hospital directory", () => {
+    expect(resolveFleetTab("/internal/users")).toBe("users");
+  });
+
   it("falls back to Devices on other internal paths", () => {
     expect(resolveFleetTab("/internal/profile")).toBe("devices");
   });
