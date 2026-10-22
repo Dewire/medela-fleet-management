@@ -52,3 +52,6 @@ export function createFleetNavCountStore(initial: FleetNavDeviceCount = EMPTY_CO
 }
 
 export const fleetNavCountStore = createFleetNavCountStore();
+
+/** Biomed Devices-tab badge. Kept apart from the internal fleet badge. */
+export const biomedNavCountStore = createFleetNavCountStore();

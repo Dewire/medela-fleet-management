@@ -174,4 +174,13 @@
   html {
     @apply font-sans;
   }
+  /*
+   * Native dialog backdrops only dim the page. Blur keeps the open modal as
+   * the only sharp surface, on every screen that calls showModal().
+   */
+  dialog::backdrop {
+    background-color: rgb(0 0 0 / 0.4);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
 }

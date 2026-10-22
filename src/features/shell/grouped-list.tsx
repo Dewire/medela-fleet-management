@@ -41,23 +41,32 @@ export function GroupedList({
 
 /**
  * Full-row hit target: title, secondary line, trailing chip, chevron.
+ *
+ * @param className - Extra row styles, such as a highlight for a new record
+ * @param onClick - Called when the row is pressed, before navigation
  */
 export function GroupedListRow({
   href,
   title,
   subtitle,
   trailing,
+  className,
+  onClick,
 }: {
   href: string;
   title: React.ReactNode;
   subtitle: React.ReactNode;
   trailing?: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
 }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         "flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-black/[0.03]",
+        className,
       )}
     >
       <div className="min-w-0">

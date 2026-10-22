@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Medela Fleet Management",
-  description: "Connected breast pump fleet management portal for Medela Internal staff.",
+  description:
+    "Connected breast pump fleet management portal for Medela teams and Biomed users.",
   icons: { icon: "/medela-mark.svg" },
 };
 

@@ -22,6 +22,7 @@ const offer = {
   version: "v2.4.0",
   notes: "Battery optimisation",
   uploadedBy: "Sarah Chen",
+  date: "2025-12-10",
 };
 
 describe("applyDeviceFirmwareUpdate", () => {

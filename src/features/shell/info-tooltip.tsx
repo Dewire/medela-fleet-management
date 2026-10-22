@@ -17,29 +17,33 @@ const HOVER_DELAY_MS = 150;
  * @param label - Accessible name for the trigger, e.g. "What each role can do"
  * @param side - Which side of the trigger to place the popup on
  * @param className - Extra utilities for the popup, typically a width
+ * @param container - Element that receives the popup. Pass an open dialog so the tooltip stays above its backdrop
  * @param children - Popup content
  */
 export function InfoTooltip({
   label,
   side = "top",
   className,
+  container,
   children,
 }: {
   label: string;
   side?: "top" | "bottom" | "left" | "right";
   className?: string;
+  container?: React.ComponentProps<typeof Tooltip.Portal>["container"];
   children: React.ReactNode;
 }) {
   return (
     <Tooltip.Root>
       <Tooltip.Trigger
+        type="button"
         delay={HOVER_DELAY_MS}
         aria-label={label}
         className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
       >
         <Info size={15} aria-hidden="true" />
       </Tooltip.Trigger>
-      <Tooltip.Portal>
+      <Tooltip.Portal container={container}>
         <Tooltip.Positioner side={side} sideOffset={8} className="z-50">
           <Tooltip.Popup
             className={cn(

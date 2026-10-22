@@ -1,17 +1,20 @@
 # Account
 
-Header avatar menu and profile for the prototype signed-in Medela Internal user.
+Header avatar menu and profile fixtures for each prototype portal.
 
 ## How to use
 
 - `AccountMenu` lives in `AppHeader`. Everyone sees Profile and Log out.
-- `/internal/profile` — read-only account details. The page wraps `AppShell`; `ProfileScreen` returns the card only.
+- `/internal/profile`, `/sales/profile`, and `/biomed/profile` show the active
+  route's fixture. Pages wrap `AppShell`; `ProfileScreen` returns the card only.
 
 This module is only ever about the signed-in user.
 
-`getAccountUser` is the only way UI should learn who is "signed in". There is no session.
+`getAccountUser(role)` is the only way UI should resolve a fixture identity.
+`getPortalHrefs(role)` owns profile and home links. There is no session.
 
 ## Gotchas
 
-- Log out goes to `/login/medela`. It does not clear state because there is none.
+- Log out goes to `/login/medela`. It does not clear state because role is
+  represented by the current route.
 - Initials are stored on the fixture. Do not derive them from the name — titles like "Dr." would produce the wrong mark.

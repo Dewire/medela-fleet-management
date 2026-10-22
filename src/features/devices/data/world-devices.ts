@@ -21,4 +21,10 @@ export const WORLD_DEVICES: WorldDevice[] = [
   { id: "KF-2024-00789", city: "Sydney", country: "Australia", region: "asia-pacific", status: "updated", hospital: "Royal Hospital for Women", firmware: "v2.4.0", model: "Swing Maxi" },
   { id: "KF-2023-01201", city: "Johannesburg", country: "South Africa", region: "mea", status: "failed", hospital: "Milpark Hospital", firmware: "v2.2.8", model: "Freestyle Hands-free" },
   { id: "KF-2024-00944", city: "Seoul", country: "South Korea", region: "asia-pacific", status: "updated", hospital: "Asan Medical Center", firmware: "v2.4.0", model: "Symphony" },
+  { id: "KF-2025-01820", city: "London", country: "UK", region: "europe", status: "needs-update", hospital: "St Mary's Hospital", firmware: "v2.3.1", model: "Freestyle Hands-free", organizationId: "st-marys-hospital", registrationCode: "18420" },
+  { id: "KF-2025-02104", city: "London", country: "UK", region: "europe", status: "updated", hospital: "St Mary's Hospital", firmware: "v2.4.0", model: "Symphony", organizationId: "st-marys-hospital", registrationCode: "39011" },
+  { id: "KF-2025-02488", city: "London", country: "UK", region: "europe", status: "failed", hospital: "St Mary's Hospital", firmware: "v2.2.8", model: "Swing Maxi", organizationId: "st-marys-hospital", registrationCode: "55218" },
+  { id: "KF-2026-01102", city: "London", country: "UK", region: "europe", status: "needs-update", hospital: "St Mary's Hospital", firmware: "Not installed", model: "Queen", organizationId: "st-marys-hospital", registrationCode: "70433" },
+  { id: "KF-2026-02655", city: "London", country: "UK", region: "europe", status: "updated", hospital: "St Mary's Hospital", firmware: "v2.4.0", model: "Freestyle Hands-free", organizationId: "st-marys-hospital", registrationCode: "88104" },
+  { id: "KF-2026-38977", city: "London", country: "UK", region: "europe", status: "needs-update", hospital: "St Mary's Hospital", firmware: "Not installed", model: "Symphony", organizationId: "st-marys-hospital", registrationCode: "24617" },
 ];

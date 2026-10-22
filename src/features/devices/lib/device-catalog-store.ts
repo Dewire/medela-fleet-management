@@ -2,14 +2,32 @@ import { listFirmwareReleases } from "@/features/firmware/repositories/firmware-
 import type { FirmwareRelease } from "@/features/firmware/types";
 
 import { listWorldDevices } from "../repositories/device-repository";
-import type { DeviceFirmwareLogEntry, FirmwareUpdateOffer, WorldDevice } from "../types";
+import type {
+  DeviceFirmwareLogEntry,
+  FirmwareUpdateOffer,
+  RegisterDeviceInput,
+  WorldDevice,
+} from "../types";
 import { applyDeviceFirmwareUpdate } from "./apply-device-update";
 import { buildDeviceFirmwareLog } from "./device-firmware-log";
+import { generateRegistrationCode } from "./generate-registration-code";
 
 export type DeviceCatalogSnapshot = {
   devices: WorldDevice[];
   logs: Record<string, DeviceFirmwareLogEntry[]>;
 };
+
+/** Expected device-registration failure codes. */
+export type RegisterDeviceErrorCode =
+  | "duplicate_device"
+  | "duplicate_code"
+  | "invalid_code"
+  | "code_generation_failed";
+
+/** Result of adding one device to the prototype catalog. */
+export type RegisterDeviceResult =
+  | { ok: true; device: WorldDevice }
+  | { ok: false; code: RegisterDeviceErrorCode; message: string };
 
 /**
  * Live fleet plus per-device install logs so detail and the list stay aligned.
@@ -50,6 +68,49 @@ export function createDeviceCatalogStore(
     },
 
     /**
+     * Registers a device and keeps a hospital token.
+     * A code supplied by the caller is stored as shown. Otherwise a new
+     * five-digit token is generated.
+     *
+     * @param input - Device identity plus its organisation context
+     * @param random - Random source used only when no token is supplied
+     */
+    addDevice(
+      input: RegisterDeviceInput,
+      random: () => number = Math.random,
+    ): RegisterDeviceResult {
+      const duplicate = devices.some(
+        (device) => device.id.toLowerCase() === input.id.toLowerCase(),
+      );
+      if (duplicate) {
+        return {
+          ok: false,
+          code: "duplicate_device",
+          message: "A device with this ID already exists",
+        };
+      }
+
+      const existingCodes = new Set(
+        devices.flatMap((device) =>
+          device.registrationCode ? [device.registrationCode] : [],
+        ),
+      );
+      const registrationCode = resolveRegistrationCode(input.registrationCode, existingCodes, random);
+      if (!registrationCode.ok) return registrationCode;
+
+      const device: WorldDevice = {
+        ...input,
+        status: "needs-update",
+        firmware: "Not installed",
+        registrationCode: registrationCode.value,
+      };
+      devices = [...devices, device];
+      logs = { ...logs, [device.id]: [] };
+      emit();
+      return { ok: true, device };
+    },
+
+    /**
      * Applies a finished OTA to one device.
      *
      * @returns The updated device, or null when the id is unknown
@@ -69,6 +130,40 @@ export function createDeviceCatalogStore(
       return result.device;
     },
   };
+}
+
+function resolveRegistrationCode(
+  provided: string | undefined,
+  existing: ReadonlySet<string>,
+  random: () => number,
+): { ok: true; value: string } | Exclude<RegisterDeviceResult, { ok: true }> {
+  if (provided !== undefined) {
+    if (!/^\d{5}$/.test(provided)) {
+      return {
+        ok: false,
+        code: "invalid_code",
+        message: "Hospital token must be five digits",
+      };
+    }
+    if (existing.has(provided)) {
+      return {
+        ok: false,
+        code: "duplicate_code",
+        message: "This hospital token is already in use",
+      };
+    }
+    return { ok: true, value: provided };
+  }
+
+  const generated = generateRegistrationCode(existing, random);
+  if (!generated) {
+    return {
+      ok: false,
+      code: "code_generation_failed",
+      message: "Could not generate a hospital token. Try again.",
+    };
+  }
+  return { ok: true, value: generated };
 }
 
 export const deviceCatalogStore = createDeviceCatalogStore();

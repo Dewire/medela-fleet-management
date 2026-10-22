@@ -16,6 +16,18 @@ export type WorldDevice = {
   hospital: string;
   firmware: string;
   model: string;
+  /** Customer organisation that registered the device, when known. */
+  organizationId?: string;
+  /** Five-digit hospital token issued during prototype registration. */
+  registrationCode?: string;
+};
+
+/**
+ * Complete device payload accepted by the in-memory catalog.
+ * `registrationCode` is set when the caller already showed that token.
+ */
+export type RegisterDeviceInput = Omit<WorldDevice, "status" | "firmware" | "registrationCode"> & {
+  registrationCode?: string;
 };
 
 /**
@@ -39,4 +51,6 @@ export type FirmwareUpdateOffer = {
   version: string;
   notes: string;
   uploadedBy: string;
+  /** Publish date of the release, `YYYY-MM-DD`. */
+  date: string;
 };

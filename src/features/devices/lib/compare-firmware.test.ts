@@ -28,4 +28,12 @@ describe("isNewerFirmware", () => {
   it("returns false when the candidate cannot be parsed", () => {
     expect(isNewerFirmware("nightly", "v2.4.0")).toBe(false);
   });
+
+  it("treats a real version as newer than a device with no firmware", () => {
+    expect(isNewerFirmware("v2.4.0", "Not installed")).toBe(true);
+  });
+
+  it("does not treat a missing install as newer than a real version", () => {
+    expect(isNewerFirmware("Not installed", "v2.4.0")).toBe(false);
+  });
 });

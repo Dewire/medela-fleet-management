@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { AccountMenu } from "@/features/account/components/account-menu";
-import { ACCOUNT_HOME_HREF } from "@/features/account/lib/current-user";
+import { getPortalHrefs } from "@/features/account/lib/current-user";
+import type { PortalRole } from "@/features/account/types";
 import { MedelaLogo } from "@/features/brand/components/medela-logo";
 
 /**
@@ -9,15 +10,19 @@ import { MedelaLogo } from "@/features/brand/components/medela-logo";
  *
  * Yellow is a fill colour, so the lockup stays `text-brand-ink` — white type
  * on this yellow would vanish.
+ *
+ * @param role - Portal whose home and account links should be used
  */
-export function AppHeader() {
+export function AppHeader({ role = "internal" }: { role?: PortalRole }) {
+  const hrefs = getPortalHrefs(role);
+
   return (
     <header className="sticky top-0 z-40 border-b border-brand-yellow-dark/40 bg-brand-yellow">
       <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between px-8">
-        <Link href={ACCOUNT_HOME_HREF}>
+        <Link href={hrefs.home}>
           <MedelaLogo className="h-[22px] text-brand-ink" />
         </Link>
-        <AccountMenu />
+        <AccountMenu role={role} />
       </div>
     </header>
   );

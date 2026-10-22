@@ -30,6 +30,16 @@ describe("createFleetNavCountStore", () => {
     expect(store.getSnapshot()).toEqual({ count: undefined, label: undefined });
   });
 
+  it("keeps two badges independent", () => {
+    const fleet = createFleetNavCountStore({ count: 27, label: "27 devices" });
+    const biomed = createFleetNavCountStore();
+
+    biomed.set(2, "2 devices");
+
+    expect(fleet.getSnapshot().count).toBe(27);
+    expect(biomed.getSnapshot()).toEqual({ count: 2, label: "2 devices" });
+  });
+
   it("does not notify a listener after unsubscribe", () => {
     const store = createFleetNavCountStore();
     let heard = 0;

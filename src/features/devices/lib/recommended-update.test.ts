@@ -19,6 +19,7 @@ describe("recommendedFirmwareUpdate", () => {
       version: "v2.4.0",
       notes: "Battery optimisation",
       uploadedBy: "Sarah Chen",
+      date: "2025-12-10",
     });
   });
 
@@ -30,6 +31,15 @@ describe("recommendedFirmwareUpdate", () => {
     expect(
       recommendedFirmwareUpdate({ firmware: "v2.4.0", model: "Freestyle Hands-free" }, [releases[2]!]),
     ).toBeNull();
+  });
+
+  it("offers the newest package when the device has no firmware installed", () => {
+    expect(recommendedFirmwareUpdate({ ...freestyle, firmware: "Not installed" }, releases)).toEqual({
+      version: "v2.4.0",
+      notes: "Battery optimisation",
+      uploadedBy: "Sarah Chen",
+      date: "2025-12-10",
+    });
   });
 
   it("does not offer a package for a different device type", () => {

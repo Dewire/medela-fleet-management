@@ -7,8 +7,10 @@ Fleet inventory and status chips for Medela Internal staff.
 - `listWorldDevices` / `getWorldDeviceById` — internal device table
 - `filterWorldDevices` — table status and search
 - `availableFirmwareUpdates` — installable packages for a device (dropdown on the detail card)
-- `recommendedFirmwareUpdate` — newest package newer than what is already installed
+- `recommendedFirmwareUpdate` — newest package newer than what is already installed. `Not installed` is older than any real version.
 - `deviceCatalogStore` — live fleet and per-device install logs
+- `deviceCatalogStore.addDevice` — Biomed registration with a five-digit token, or a token the caller already showed
+- `generateRegistrationCode` — unique five-digit token generation
 - `StatusChip` — use anywhere a device status appears
 
 ### Filter state
@@ -22,6 +24,13 @@ Fleet inventory and status chips for Medela Internal staff.
 
 The `/internal` page wraps `AppShell fill fleetNav`. Feature screens return list content only. Filters and rows share a `GroupedList` card so only the rows scroll. The Devices tab count follows the list filters via `fleetNavCountStore`. `/internal/devices` redirects here, including a `?status=` filter. Device rows still open `/internal/devices/[id]`. Identity and the next firmware share one card; firmware history is a second card with the title separated from the rows. History rows use the same uploader credit as the firmware catalog, with notes shortened to the first clause. Device detail uses the shell `DefinitionList` for model and firmware.
 
+The `/biomed` list reads the same live catalog but only shows devices carrying
+the fixture organisation ID. Six St Mary's devices are part of that catalog,
+so the hospital list is populated on every load. It uses the same status chips
+and status filter as the internal list. Registration adds organisation
+ownership and a per-device token. The token is shown on the device detail,
+not on the list row.
+
 ## Gotchas
 
 - Status colors are fixed: amber needs-update, green updated, red failed.
@@ -29,6 +38,7 @@ The `/internal` page wraps `AppShell fill fleetNav`. Feature screens return list
 - Status is the visible segmented axis, so `describeDeviceFilters` deliberately omits it. Adding it would give one filter two controls.
 - `suggestFilterRelaxation` assumes the current result is empty; it only returns a removal that reveals at least one device, and ties go to the less intentional facet (search is suggested last).
 - Sample data is in-memory only.
+- Biomed device registrations and their tokens reset on a full reload.
 - Starting an update on a device finishes in `DEVICE_UPDATE_DURATION_MS` (12s) so the progress is visible without waiting minutes. The device then shows as updated on the list.
 
 ## For implementers

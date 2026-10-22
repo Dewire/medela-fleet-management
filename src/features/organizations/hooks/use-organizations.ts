@@ -1,0 +1,55 @@
+"use client";
+
+import { useCallback, useSyncExternalStore } from "react";
+
+import {
+  organizationStore,
+  type OrganizationStoreResult,
+} from "../lib/organization-store";
+import type {
+  AddOrganizationUserInput,
+  CreateOrganizationInput,
+} from "../schemas";
+import type { Organization, OrganizationUser } from "../types";
+
+/**
+ * Live organisation directory shared by Sales screens.
+ */
+export function useOrganizations(): {
+  organizations: Organization[];
+  addOrganization: (
+    input: CreateOrganizationInput,
+  ) => OrganizationStoreResult<Organization>;
+  addUser: (
+    organizationId: string,
+    input: AddOrganizationUserInput,
+  ) => OrganizationStoreResult<OrganizationUser>;
+  unseenIds: ReadonlySet<string>;
+  acknowledgeOrganization: (organizationId: string) => void;
+} {
+  const organizations = useSyncExternalStore(
+    organizationStore.subscribe,
+    organizationStore.getSnapshot,
+    organizationStore.getSnapshot,
+  );
+  const unseenIds = useSyncExternalStore(
+    organizationStore.subscribe,
+    organizationStore.getUnseenSnapshot,
+    organizationStore.getUnseenSnapshot,
+  );
+  const addOrganization = useCallback(
+    (input: CreateOrganizationInput) => organizationStore.addOrganization(input),
+    [],
+  );
+  const addUser = useCallback(
+    (organizationId: string, input: AddOrganizationUserInput) =>
+      organizationStore.addUser(organizationId, input),
+    [],
+  );
+  const acknowledgeOrganization = useCallback(
+    (organizationId: string) => organizationStore.acknowledgeOrganization(organizationId),
+    [],
+  );
+
+  return { organizations, addOrganization, addUser, unseenIds, acknowledgeOrganization };
+}

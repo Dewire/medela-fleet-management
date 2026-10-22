@@ -1,5 +1,7 @@
 import { AppHeader } from "@/features/shell/app-header";
 import { FleetNavTabs } from "@/features/shell/fleet-nav-tabs";
+import { PortalNavTabs } from "@/features/shell/portal-nav-tabs";
+import type { PortalRole } from "@/features/account/types";
 import {
   appShellContentClass,
   shouldLockAppShell,
@@ -7,6 +9,7 @@ import {
 } from "@/features/shell/lib/app-shell-layout";
 type AppShellProps = {
   children: React.ReactNode;
+  portalRole?: PortalRole;
   title?: React.ReactNode;
   subtitle?: string;
   headerAction?: React.ReactNode;
@@ -21,6 +24,10 @@ type AppShellProps = {
    * the tab bar stays in one place across those three screens.
    */
   fleetNav?: boolean;
+  /** Render the active Sales or Biomed workspace navigation. */
+  portalNav?: boolean;
+  /** Control rendered at the trailing edge of the portal tab bar. */
+  portalNavAction?: React.ReactNode;
 };
 
 /**
@@ -28,18 +35,21 @@ type AppShellProps = {
  */
 export function AppShell({
   children,
+  portalRole = "internal",
   title,
   subtitle,
   headerAction,
   variant = "default",
   fill = false,
   fleetNav = false,
+  portalNav = false,
+  portalNavAction,
 }: AppShellProps) {
   const lockViewport = shouldLockAppShell(fill, fleetNav);
 
   return (
     <div className={lockViewport ? "flex h-dvh flex-col overflow-hidden bg-background" : "min-h-screen bg-background"}>
-      <AppHeader />
+      <AppHeader role={portalRole} />
       <main
         className={
           lockViewport
@@ -48,6 +58,9 @@ export function AppShell({
         }
       >
         {fleetNav ? <FleetNavTabs /> : null}
+        {portalNav && portalRole !== "internal" ? (
+          <PortalNavTabs role={portalRole} action={portalNavAction} />
+        ) : null}
         {(title || subtitle || headerAction) && (
           <div className={`flex shrink-0 items-end justify-between gap-4 ${lockViewport ? "mb-4" : "mb-8"}`}>
             <div>

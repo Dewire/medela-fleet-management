@@ -35,7 +35,7 @@ describe("createDeviceCatalogStore", () => {
 
     const updated = store.applyUpdate(
       "KF-1",
-      { version: "v2.4.0", notes: "Battery", uploadedBy: "Sarah Chen" },
+      { version: "v2.4.0", notes: "Battery", uploadedBy: "Sarah Chen", date: "2025-12-10" },
       new Date("2026-09-10T12:00:00.000Z"),
     );
 
@@ -48,7 +48,104 @@ describe("createDeviceCatalogStore", () => {
   it("returns null when the device is missing", () => {
     const store = createDeviceCatalogStore([device], releases);
     expect(
-      store.applyUpdate("nope", { version: "v2.4.0", notes: "Battery", uploadedBy: "Sarah Chen" }),
+      store.applyUpdate("nope", { version: "v2.4.0", notes: "Battery", uploadedBy: "Sarah Chen", date: "2025-12-10" }),
     ).toBeNull();
+  });
+
+  it("registers a device with a five-digit hospital token", () => {
+    const store = createDeviceCatalogStore([device], releases);
+    const result = store.addDevice(
+      {
+        id: "KF-2",
+        city: "London",
+        country: "UK",
+        region: "europe",
+        hospital: "St Mary's Hospital",
+        model: "Queen",
+        organizationId: "st-marys-hospital",
+      },
+      () => 0,
+    );
+
+    expect(result).toMatchObject({
+      ok: true,
+      device: {
+        id: "KF-2",
+        registrationCode: "00000",
+        status: "needs-update",
+      },
+    });
+    expect(store.getSnapshot().devices).toHaveLength(2);
+    expect(store.getSnapshot().logs["KF-2"]).toEqual([]);
+  });
+
+  it("rejects a duplicate device ID case-insensitively", () => {
+    const store = createDeviceCatalogStore([device], releases);
+    const result = store.addDevice({
+      id: "kf-1",
+      city: "London",
+      country: "UK",
+      region: "europe",
+      hospital: "St Mary's Hospital",
+      model: "Queen",
+      organizationId: "st-marys-hospital",
+    });
+
+    expect(result).toMatchObject({ ok: false, code: "duplicate_device" });
+    expect(store.getSnapshot().devices).toHaveLength(1);
+  });
+
+  it("returns an expected error when token generation is exhausted", () => {
+    const existing = { ...device, registrationCode: "00000" };
+    const store = createDeviceCatalogStore([existing], releases);
+    const result = store.addDevice(
+      {
+        id: "KF-2",
+        city: "London",
+        country: "UK",
+        region: "europe",
+        hospital: "St Mary's Hospital",
+        model: "Queen",
+        organizationId: "st-marys-hospital",
+      },
+      () => 0,
+    );
+
+    expect(result).toMatchObject({ ok: false, code: "code_generation_failed" });
+    expect(store.getSnapshot().devices).toHaveLength(1);
+  });
+
+  it("stores a hospital token the caller already showed", () => {
+    const store = createDeviceCatalogStore([device], releases);
+    const result = store.addDevice({
+      id: "KF-2",
+      city: "London",
+      country: "UK",
+      region: "europe",
+      hospital: "St Mary's Hospital",
+      model: "Queen",
+      organizationId: "st-marys-hospital",
+      registrationCode: "48291",
+    });
+
+    expect(result).toMatchObject({ ok: true, device: { registrationCode: "48291" } });
+  });
+
+  it("rejects a hospital token that is already in use", () => {
+    const existing = { ...device, registrationCode: "48291" };
+    const store = createDeviceCatalogStore([existing], releases);
+    const result = store.addDevice({
+      id: "KF-2",
+      city: "London",
+      country: "UK",
+      region: "europe",
+      hospital: "St Mary's Hospital",
+      model: "Queen",
+      organizationId: "st-marys-hospital",
+      registrationCode: "48291",
+    });
+
+    expect(result).toMatchObject({ ok: false, code: "duplicate_code" });
+    expect(store.getSnapshot().devices).toHaveLength(1);
   });
 });

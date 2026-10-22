@@ -30,6 +30,7 @@ export function availableFirmwareUpdates(
       version: release.version,
       notes: release.notes,
       uploadedBy: release.uploadedBy,
+      date: release.date,
     });
   }
 

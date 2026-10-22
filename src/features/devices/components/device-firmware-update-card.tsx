@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { DeviceFirmwareVersionSelect } from "@/features/devices/components/device-firmware-version-select";
 import { DeviceUpdateProgress } from "@/features/devices/components/device-update-progress";
@@ -27,7 +27,9 @@ export function DeviceFirmwareUpdateCard({
   const [selectedVersion, setSelectedVersion] = useState(offers[0]?.version ?? "");
   const selected = offers.find((offer) => offer.version === selectedVersion) ?? offers[0] ?? null;
   const selectedRef = useRef(selected);
-  selectedRef.current = selected;
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
   const { phase, progress, stage, start } = useDeviceUpdateRun(() => {
     const finished = selectedRef.current;
     if (finished) onFinished(finished);

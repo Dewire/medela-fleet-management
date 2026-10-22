@@ -16,7 +16,8 @@ export function parseFirmwareVersion(
 
 /**
  * True when `candidate` is a higher version than `current`.
- * Unparseable labels are treated as not newer so a bad string cannot win.
+ * An unparseable candidate cannot win. An unparseable current label, such as
+ * `Not installed`, is older than any real version.
  *
  * @param candidate - Offered firmware version
  * @param current - Version already on the device
@@ -24,7 +25,8 @@ export function parseFirmwareVersion(
 export function isNewerFirmware(candidate: string, current: string): boolean {
   const left = parseFirmwareVersion(candidate);
   const right = parseFirmwareVersion(current);
-  if (!left || !right) return false;
+  if (!left) return false;
+  if (!right) return true;
   if (left[0] !== right[0]) return left[0] > right[0];
   if (left[1] !== right[1]) return left[1] > right[1];
   return left[2] > right[2];

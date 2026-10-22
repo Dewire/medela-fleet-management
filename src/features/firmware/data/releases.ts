@@ -4,6 +4,7 @@ export const FIRMWARE_RELEASES: FirmwareRelease[] = [
   { version: "v2.4.0", date: "2025-12-10", region: "All regions", deviceType: "Freestyle Hands-free", status: "active", devices: 442, notes: "Battery optimisation, improved connectivity stability.", uploadedBy: "Sarah Chen" },
   { version: "v2.4.0", date: "2025-12-10", region: "All regions", deviceType: "Symphony", status: "active", devices: 198, notes: "Battery optimisation, improved connectivity stability.", uploadedBy: "Sarah Chen" },
   { version: "v2.4.0", date: "2025-12-10", region: "All regions", deviceType: "Swing Maxi", status: "active", devices: 134, notes: "Battery optimisation, improved connectivity stability.", uploadedBy: "Sarah Chen" },
+  { version: "v2.4.0", date: "2025-12-10", region: "All regions", deviceType: "Queen", status: "active", devices: 86, notes: "Battery optimisation, improved connectivity stability.", uploadedBy: "Sarah Chen" },
   { version: "v2.3.1", date: "2025-09-04", region: "Europe", deviceType: "Freestyle Hands-free", status: "superseded", devices: 312, notes: "EU compliance patch — CE re-certification.", uploadedBy: "Tobias Keller" },
   { version: "v2.3.1", date: "2025-09-04", region: "Europe", deviceType: "Symphony", status: "superseded", devices: 145, notes: "EU compliance patch — CE re-certification.", uploadedBy: "Tobias Keller" },
   { version: "v2.3.0", date: "2025-07-18", region: "All regions", deviceType: "Freestyle Hands-free", status: "superseded", devices: 480, notes: "New OTA update engine, background sync.", uploadedBy: "Lena Hofmann" },

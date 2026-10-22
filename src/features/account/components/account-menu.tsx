@@ -4,20 +4,20 @@ import { useId, useState } from "react";
 import Link from "next/link";
 
 import { AccountAvatar } from "@/features/account/components/account-avatar";
-import {
-  ACCOUNT_PROFILE_HREF,
-  SIGN_OUT_HREF,
-  getAccountUser,
-} from "@/features/account/lib/current-user";
+import { SIGN_OUT_HREF, getAccountUser, getPortalHrefs } from "@/features/account/lib/current-user";
+import type { PortalRole } from "@/features/account/types";
 import { PopoverSurface } from "@/features/shell/popover-surface";
 import { useDismiss } from "@/features/shell/use-dismiss";
 
 /**
  * Header account control: initials avatar that opens Profile and Log out.
  * There is no real session, so Log out returns to Medela sign-in.
+ *
+ * @param role - Portal whose fixture identity and links should be displayed
  */
-export function AccountMenu() {
-  const user = getAccountUser();
+export function AccountMenu({ role = "internal" }: { role?: PortalRole }) {
+  const user = getAccountUser(role);
+  const hrefs = getPortalHrefs(role);
   const [open, setOpen] = useState(false);
   const rootRef = useDismiss(open, () => setOpen(false));
   const panelId = useId();
@@ -43,7 +43,7 @@ export function AccountMenu() {
               <p className="truncate text-sm font-semibold text-foreground">{user.name}</p>
               <p className="truncate text-xs text-muted-foreground">{user.email}</p>
             </div>
-            <MenuLink href={ACCOUNT_PROFILE_HREF} onPick={() => setOpen(false)}>
+            <MenuLink href={hrefs.profile} onPick={() => setOpen(false)}>
               Profile
             </MenuLink>
             <div className="border-t border-black/6">
