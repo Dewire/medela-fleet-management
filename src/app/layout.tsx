@@ -14,10 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Medela Fleet Management",
-  description:
-    "Connected breast pump fleet management portal for Medela teams and Biomed users.",
+  title: "Fleet Management for Medela devices",
+  description: "Fleet Management for Medela devices",
   icons: { icon: "/medela-mark.svg" },
+  openGraph: {
+    title: "Fleet Management for Medela devices",
+    description: "Fleet Management for Medela devices",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
