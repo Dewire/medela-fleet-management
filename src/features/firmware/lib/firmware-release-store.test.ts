@@ -37,6 +37,17 @@ describe("createFirmwareReleaseStore", () => {
     expect(store.getSnapshot()).toHaveLength(2);
   });
 
+  it("replaces the catalog", () => {
+    const store = createFirmwareReleaseStore(seed);
+    store.replace([]);
+
+    expect(store.getSnapshot()).toEqual([]);
+
+    store.replace(seed);
+
+    expect(store.getSnapshot()).toEqual(seed);
+  });
+
   it("does not notify a listener after unsubscribe", () => {
     const store = createFirmwareReleaseStore(seed);
     let heard = 0;

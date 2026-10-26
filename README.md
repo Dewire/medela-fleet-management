@@ -27,7 +27,7 @@ npm run lint   # ESLint
 | `/internal/firmware` | Firmware history |
 | `/internal/firmware/upload` | Publish a release |
 | `/internal/firmware/[version]` | Release detail (`?deviceType=` required) |
-| `/internal/users` | Hospital users across organisations; invites are prototype messages |
+| `/internal/users` | Medela staff; invites are prototype messages |
 | `/internal/profile` | Read-only account fixture |
 | `/sales` | Customer organisation list |
 | `/sales/organizations/new` | Redirects to `/sales`; hospitals are added in a modal |
@@ -54,6 +54,7 @@ Code lives under `src/features/`, organized by domain:
 | `devices` | Fleet list, filters, device detail |
 | `firmware` | History, publish, release detail |
 | `organizations` | Sales organisation and directory-user management |
+| `staff` | Medela Internal staff directory |
 | `shell` | Shared chrome and list/form primitives |
 
 Authenticated **pages** wrap `AppShell`. Feature screens return content only.
@@ -63,7 +64,7 @@ Authenticated **pages** wrap `AppShell`. Feature screens return content only.
 - Login buttons route directly to one workspace. There is no cookie,
   middleware, permission check, or route guard.
 - Fixture identities come from `getAccountUser(role)`.
-- Organisation, user, device, and firmware mutations live in module-scoped
+- Organisation, staff, device, and firmware mutations live in module-scoped
   stores and vanish on reload.
 - Device hospital tokens are five-digit prototype codes, not secrets.
 - The publish dropzone is visual only; Zod validates the form fields.

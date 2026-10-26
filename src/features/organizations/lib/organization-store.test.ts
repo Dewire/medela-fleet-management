@@ -196,6 +196,40 @@ describe("createOrganizationStore", () => {
     });
   });
 
+  it("replaces the directory and clears unseen highlights", () => {
+    const store = createOrganizationStore(seed);
+    store.addOrganization({
+      name: "Hôpital Necker",
+      city: "Paris",
+      country: "France",
+      adminEmails: ["marie.curie@necker.fr"],
+    });
+
+    store.replace([]);
+
+    expect(store.getSnapshot()).toEqual([]);
+    expect(store.getUnseenSnapshot().size).toBe(0);
+  });
+
+  it("keeps an existing hospital when ensuring the same id", () => {
+    const store = createOrganizationStore(seed);
+    const ensured = store.ensureOrganization({
+      ...seed[0]!,
+      name: "Other Name",
+    });
+
+    expect(ensured.name).toBe("Hospital One");
+    expect(store.getSnapshot()).toHaveLength(1);
+  });
+
+  it("inserts a hospital when that id is missing", () => {
+    const store = createOrganizationStore([]);
+    const ensured = store.ensureOrganization(seed[0]!);
+
+    expect(ensured.id).toBe("hospital-one");
+    expect(store.getSnapshot()).toHaveLength(1);
+  });
+
   it("returns an expected error when the organisation is missing", () => {
     const store = createOrganizationStore(seed);
     const result = store.addUser("missing", {

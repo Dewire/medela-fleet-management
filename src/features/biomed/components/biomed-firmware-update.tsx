@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { DeviceUpdateProgress } from "@/features/devices/components/device-update-progress";
 import { useDeviceUpdateRun } from "@/features/devices/hooks/use-device-update-run";
+import { noInstallableFirmwareMessage } from "@/features/devices/lib/no-installable-firmware-message";
 import type { FirmwareUpdateOffer, WorldDevice } from "@/features/devices/types";
 import { PrimaryActionButton } from "@/features/shell/primary-action-button";
 
@@ -34,7 +35,9 @@ export function BiomedFirmwareUpdate({
   });
 
   if (phase === "idle" && !offer) {
-    return <p className="text-sm text-muted-foreground">This device is on the latest firmware.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">{noInstallableFirmwareMessage(device.firmware)}</p>
+    );
   }
 
   const startLabel = device.status === "failed" ? "Try again" : "Activate update";

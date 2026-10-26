@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { DeviceFirmwareVersionSelect } from "@/features/devices/components/device-firmware-version-select";
 import { DeviceUpdateProgress } from "@/features/devices/components/device-update-progress";
 import { useDeviceUpdateRun } from "@/features/devices/hooks/use-device-update-run";
+import { noInstallableFirmwareMessage } from "@/features/devices/lib/no-installable-firmware-message";
 import type { FirmwareUpdateOffer, WorldDevice } from "@/features/devices/types";
 import { PrimaryActionButton } from "@/features/shell/primary-action-button";
 
@@ -39,7 +40,9 @@ export function DeviceFirmwareUpdateCard({
 
   if (phase === "idle" && !selected) {
     return (
-      <p className="text-sm text-muted-foreground">This device is on the latest firmware.</p>
+      <p className="text-sm text-muted-foreground">
+        {noInstallableFirmwareMessage(device.firmware)}
+      </p>
     );
   }
 

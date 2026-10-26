@@ -4,6 +4,7 @@ import { AccountMenu } from "@/features/account/components/account-menu";
 import { getPortalHrefs } from "@/features/account/lib/current-user";
 import type { PortalRole } from "@/features/account/types";
 import { MedelaLogo } from "@/features/brand/components/medela-logo";
+import { DemoDataSlider } from "@/features/shell/demo-data-slider";
 
 /**
  * Brand-yellow toolbar: lockup on the left, account menu on the right.
@@ -22,7 +23,10 @@ export function AppHeader({ role = "internal" }: { role?: PortalRole }) {
         <Link href={hrefs.home}>
           <MedelaLogo className="h-[22px] text-brand-ink" />
         </Link>
-        <AccountMenu role={role} />
+        <div className="flex items-center gap-4">
+          <DemoDataSlider />
+          <AccountMenu role={role} />
+        </div>
       </div>
     </header>
   );

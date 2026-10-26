@@ -14,7 +14,7 @@ import {
 import { filterWorldDevices, hasActiveDeviceFilters } from "@/features/devices/lib/filter-devices";
 import type { DeviceFilters } from "@/features/devices/types";
 import { usePublishFleetNavDeviceCount } from "@/features/shell/hooks/use-fleet-nav-device-count";
-import { GroupedList, GroupedListRow } from "@/features/shell/grouped-list";
+import { GroupedList, GroupedListEmpty, GroupedListRow } from "@/features/shell/grouped-list";
 
 /**
  * Grouped fleet list for Medela staff. Filters and rows share the card so
@@ -56,7 +56,9 @@ export function DeviceTable({ initialStatus }: { initialStatus: string }) {
           </span>
         }
       >
-        {rows.length === 0 ? (
+        {devices.length === 0 ? (
+          <GroupedListEmpty>No devices yet</GroupedListEmpty>
+        ) : rows.length === 0 ? (
           <DeviceListEmpty
             devices={devices}
             filters={filters}

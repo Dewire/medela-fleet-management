@@ -51,7 +51,6 @@ export function OrganizationList() {
               href={`/sales/organizations/${organization.id}`}
               title={organization.name}
               subtitle={`${organization.city}, ${organization.country}`}
-              trailing={<UserCountChip count={organization.users.length} />}
               className={
                 unseenIds.has(organization.id)
                   ? "bg-brand-yellow-tint hover:bg-brand-yellow/30"
@@ -63,19 +62,5 @@ export function OrganizationList() {
         )}
       </GroupedList>
     </div>
-  );
-}
-
-/**
- * Trailing count on an organisation row, in the same slot as a device status chip.
- *
- * @param count - Hospital-side users on the organisation
- */
-function UserCountChip({ count }: { count: number }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/[0.03] px-2.5 py-0.5 text-xs font-medium text-foreground">
-      <span className="size-1.5 rounded-full bg-foreground/40" aria-hidden="true" />
-      {count === 1 ? "1 user" : `${count} users`}
-    </span>
   );
 }

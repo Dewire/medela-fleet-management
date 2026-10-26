@@ -29,6 +29,7 @@ export function useOrganizations(): {
     userId: string,
     role: OrganizationUserRole,
   ) => OrganizationStoreResult<OrganizationUser>;
+  ensureOrganization: (organization: Organization) => Organization;
   unseenIds: ReadonlySet<string>;
   acknowledgeOrganization: (organizationId: string) => void;
 } {
@@ -60,12 +61,17 @@ export function useOrganizations(): {
     (organizationId: string) => organizationStore.acknowledgeOrganization(organizationId),
     [],
   );
+  const ensureOrganization = useCallback(
+    (organization: Organization) => organizationStore.ensureOrganization(organization),
+    [],
+  );
 
   return {
     organizations,
     addOrganization,
     addUser,
     setUserRole,
+    ensureOrganization,
     unseenIds,
     acknowledgeOrganization,
   };

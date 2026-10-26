@@ -6,21 +6,16 @@ import { Button } from "@/components/ui/button";
 import { BackLink } from "@/features/shell/back-link";
 import { DefinitionList } from "@/features/shell/definition-list";
 import { FormField } from "@/features/shell/form-field";
-import { NativeSelect } from "@/features/shell/native-select";
 import { Panel } from "@/features/shell/panel";
 import { PrimaryActionButton } from "@/features/shell/primary-action-button";
 import { SignOffCard } from "@/features/shell/sign-off-card";
 import { parseFormData } from "@/lib/parse-form";
-import { cn } from "@/lib/utils";
 
-import {
-  ORGANIZATION_USER_ROLE_LABELS,
-  ORGANIZATION_USER_ROLE_OPTIONS,
-} from "../constants";
+import { ORGANIZATION_USER_ROLE_LABELS } from "../constants";
 import { useOrganizations } from "../hooks/use-organizations";
 import { canAddOrganizationUser } from "../lib/can-add-organization-user";
 import { addOrganizationUserSchema } from "../schemas";
-import type { Organization, OrganizationUser, OrganizationUserRole } from "../types";
+import type { Organization, OrganizationUser } from "../types";
 
 /**
  * Sales view of one hospital, laid out like a device detail: identity card, then people.
@@ -89,7 +84,7 @@ function HospitalSummary({ organization }: { organization: Organization }) {
 }
 
 /**
- * Everyone at the hospital with Fleet Management access, tagged by role.
+ * Everyone at the hospital with Fleet Management access, tagged as Admin.
  *
  * @param organization - Hospital currently on screen
  */
@@ -116,7 +111,7 @@ function HospitalUsers({ organization }: { organization: Organization }) {
 }
 
 /**
- * One hospital-side user: name and email on the left, role tag on the right.
+ * One hospital-side admin: name and email on the left, Admin tag on the right.
  *
  * @param user - Directory user on this hospital
  */
@@ -132,27 +127,18 @@ function UserRow({ user }: { user: OrganizationUser }) {
           {user.email}
         </a>
       </div>
-      <RoleTag role={user.role} />
+      <RoleTag />
     </li>
   );
 }
 
 /**
- * Pill showing a user's role. Admin uses the Medela yellow tint so it stands out from regular users.
- *
- * @param role - Role stored on the user
+ * Everyone on this list is an admin. The yellow tint matches other Admin chips.
  */
-function RoleTag({ role }: { role: OrganizationUserRole }) {
+function RoleTag() {
   return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
-        role === "admin"
-          ? "border-brand-yellow-dark/40 bg-brand-yellow-tint text-brand-ink"
-          : "border-black/10 bg-black/[0.03] text-muted-foreground",
-      )}
-    >
-      {ORGANIZATION_USER_ROLE_LABELS[role]}
+    <span className="inline-flex shrink-0 items-center rounded-full border border-brand-yellow-dark/40 bg-brand-yellow-tint px-2.5 py-0.5 text-xs font-medium text-brand-ink">
+      {ORGANIZATION_USER_ROLE_LABELS.admin}
     </span>
   );
 }
@@ -169,8 +155,7 @@ function AddUserDialog({ organizationId }: { organizationId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<OrganizationUserRole>("user");
-  const canAdd = canAddOrganizationUser({ name, email, role });
+  const canAdd = canAddOrganizationUser({ name, email });
 
   function open() {
     const dialog = dialogRef.current;
@@ -186,7 +171,9 @@ function AddUserDialog({ organizationId }: { organizationId: string }) {
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    const parsed = parseFormData(new FormData(form), addOrganizationUserSchema);
+    const formData = new FormData(form);
+    formData.set("role", "admin");
+    const parsed = parseFormData(formData, addOrganizationUserSchema);
     if (!parsed.ok) {
       setError(parsed.message);
       return;
@@ -207,7 +194,7 @@ function AddUserDialog({ organizationId }: { organizationId: string }) {
         onClick={open}
         className="shrink-0 rounded-xl bg-brand-yellow px-4 py-2 text-sm font-semibold text-brand-ink transition-colors hover:bg-brand-yellow-dark"
       >
-        Add user
+        Add admin
       </button>
       <dialog
         ref={dialogRef}
@@ -216,7 +203,6 @@ function AddUserDialog({ organizationId }: { organizationId: string }) {
           setError(null);
           setName("");
           setEmail("");
-          setRole("user");
         }}
         className="m-auto max-h-[calc(100dvh-2rem)] w-[min(32rem,calc(100vw-2rem))] rounded-2xl border-0 bg-card p-0 text-card-foreground shadow-[0_1px_2px_rgba(0,0,0,0.04),0_24px_64px_rgba(0,0,0,0.18)] backdrop:bg-black/40 backdrop:backdrop-blur-lg"
       >
@@ -226,11 +212,9 @@ function AddUserDialog({ organizationId }: { organizationId: string }) {
             error={error}
             name={name}
             email={email}
-            role={role}
             canAdd={canAdd}
             onNameChange={setName}
             onEmailChange={setEmail}
-            onRoleChange={setRole}
             onCancel={close}
           />
         </form>
@@ -246,11 +230,9 @@ function AddUserDialog({ organizationId }: { organizationId: string }) {
  * @param error - Validation or store message, when the last submit failed
  * @param name - Current name
  * @param email - Current email
- * @param role - Current role
- * @param canAdd - Whether every field is filled well enough to submit
+ * @param canAdd - Whether name and email are filled well enough to submit
  * @param onNameChange - Receives the new name
  * @param onEmailChange - Receives the new email
- * @param onRoleChange - Receives the new role
  * @param onCancel - Closes the dialog without saving
  */
 function AddUserFields({
@@ -258,22 +240,18 @@ function AddUserFields({
   error,
   name,
   email,
-  role,
   canAdd,
   onNameChange,
   onEmailChange,
-  onRoleChange,
   onCancel,
 }: {
   titleId: string;
   error: string | null;
   name: string;
   email: string;
-  role: OrganizationUserRole;
   canAdd: boolean;
   onNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
-  onRoleChange: (value: OrganizationUserRole) => void;
   onCancel: () => void;
 }) {
   return (
@@ -295,13 +273,6 @@ function AddUserFields({
         value={email}
         onChange={onEmailChange}
       />
-      <NativeSelect
-        label="Role"
-        name="role"
-        value={role}
-        onChange={(value) => onRoleChange(value === "admin" ? "admin" : "user")}
-        options={ORGANIZATION_USER_ROLE_OPTIONS}
-      />
       {error ? (
         <p role="alert" className="text-sm text-destructive">
           {error}
@@ -312,7 +283,7 @@ function AddUserFields({
           Cancel
         </Button>
         <PrimaryActionButton type="submit" disabled={!canAdd}>
-          Add user
+          Add admin
         </PrimaryActionButton>
       </div>
     </>

@@ -6,11 +6,11 @@ import { useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getAccountUser } from "@/features/account/lib/current-user";
 import { BIOMED_ORGANIZATION } from "@/features/biomed/constants";
+import { canManageHospitalUsers } from "@/features/biomed/lib/can-manage-hospital-users";
 import { canSendHospitalInvite, parseHospitalInvite } from "@/features/biomed/lib/can-send-hospital-invite";
-import { isHospitalAdmin } from "@/features/biomed/lib/is-hospital-admin";
+import { inviteHospitalUser } from "@/features/biomed/lib/invite-hospital-user";
 import { ORGANIZATION_USER_ROLE_OPTIONS } from "@/features/organizations/constants";
 import { useOrganizations } from "@/features/organizations/hooks/use-organizations";
-import { displayNameFromEmail } from "@/features/organizations/lib/display-name-from-email";
 import type { OrganizationUserRole } from "@/features/organizations/types";
 import { FormField } from "@/features/shell/form-field";
 import { NativeSelect } from "@/features/shell/native-select";
@@ -23,14 +23,20 @@ import { PrimaryActionButton } from "@/features/shell/primary-action-button";
 export function InviteUserDialog() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
-  const { organizations, addUser } = useOrganizations();
+  const { organizations, addUser, ensureOrganization } = useOrganizations();
   const hospital = organizations.find((item) => item.id === BIOMED_ORGANIZATION.id);
-  const isAdmin = isHospitalAdmin(hospital?.users ?? [], getAccountUser("biomed").email);
+  const biomedAccount = getAccountUser("biomed");
+  const isAdmin = canManageHospitalUsers(
+    hospital?.users ?? [],
+    biomedAccount.email,
+    biomedAccount.email,
+  );
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<OrganizationUserRole>("user");
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const canSend = canSendHospitalInvite({ email, role });
+  const canSend = canSendHospitalInvite({ name, email, role });
 
   if (!isAdmin) return null;
 
@@ -45,6 +51,7 @@ export function InviteUserDialog() {
   }
 
   function reset() {
+    setName("");
     setEmail("");
     setRole("user");
     setError(null);
@@ -53,17 +60,16 @@ export function InviteUserDialog() {
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const parsed = parseHospitalInvite({ email, role });
+    const parsed = parseHospitalInvite({ name, email, role });
     if (!parsed.ok) {
       setError(parsed.message);
       return;
     }
 
-    const result = addUser(BIOMED_ORGANIZATION.id, {
-      name: displayNameFromEmail(parsed.value.email),
-      email: parsed.value.email,
-      role: parsed.value.role,
-    });
+    const result = inviteHospitalUser(
+      parsed.value,
+      { getSnapshot: () => organizations, ensureOrganization, addUser },
+    );
     if (!result.ok) {
       setError(result.message);
       return;
@@ -111,6 +117,13 @@ export function InviteUserDialog() {
                 They will receive an email inviting them to Fleet Management.
               </p>
             </div>
+            <FormField
+              label="Name"
+              name="name"
+              placeholder="Sam Rivera"
+              value={name}
+              onChange={setName}
+            />
             <FormField
               label="Email"
               name="email"

@@ -6,7 +6,13 @@ import type {
 import type { Organization, OrganizationUser } from "../types";
 
 import { createdBySalesUser } from "./created-by-sales-user";
-import { displayNameFromEmail } from "./display-name-from-email";
+import {
+  adminEmailFailure,
+  cloneOrganizations,
+  createAdminUser,
+  nextUserNumber,
+  slugify,
+} from "./organization-store-helpers";
 import { wouldLeaveWithoutAdmin } from "./would-leave-without-admin";
 
 /** Expected organisation-directory failure codes. */
@@ -39,7 +45,7 @@ export function createOrganizationStore(
   let cached = organizations;
   let cachedUnseen = unseenIds;
   let nextOrganizationId = organizations.length + 1;
-  let nextUserId = organizations.reduce((count, organization) => count + organization.users.length, 0) + 1;
+  let nextUserId = nextUserNumber(organizations);
   const listeners = new Set<() => void>();
 
   function emit() {
@@ -63,6 +69,35 @@ export function createOrganizationStore(
     subscribe(listener: () => void): () => void {
       listeners.add(listener);
       return () => listeners.delete(listener);
+    },
+
+    /**
+     * Replaces the directory. Used by the First time / Populated header switch.
+     * Clears unseen highlights and recounts ids.
+     *
+     * @param next - Organisations that should become the live catalog
+     */
+    replace(next: readonly Organization[]): void {
+      organizations = cloneOrganizations(next);
+      unseenIds.clear();
+      nextOrganizationId = organizations.length + 1;
+      nextUserId = nextUserNumber(organizations);
+      emit();
+    },
+
+    /**
+     * Inserts a hospital when that id is not already in the directory.
+     *
+     * @param organization - Hospital to keep, including a chosen id
+     * @returns The existing row, or the inserted copy
+     */
+    ensureOrganization(organization: Organization): Organization {
+      const existing = organizations.find((item) => item.id === organization.id);
+      if (existing) return existing;
+      organizations = [...organizations, ...cloneOrganizations([organization])];
+      nextUserId = nextUserNumber(organizations);
+      emit();
+      return organizations[organizations.length - 1] ?? organization;
     },
 
     addOrganization(
@@ -208,74 +243,6 @@ export function createOrganizationStore(
       return { ok: true, value: updated };
     },
   };
-}
-
-function adminEmailFailure(
-  emails: readonly string[],
-  organizations: readonly Organization[],
-): OrganizationStoreResult<never> | null {
-  if (emails.length === 0) {
-    return {
-      ok: false,
-      code: "admin_required",
-      message: "Add at least one admin email",
-    };
-  }
-
-  const normalized = emails.map((email) => email.trim().toLowerCase());
-  if (new Set(normalized).size !== normalized.length) {
-    return {
-      ok: false,
-      code: "duplicate_email",
-      message: "Each admin email must be unique",
-    };
-  }
-
-  const taken = organizations.some((organization) =>
-    organization.users.some((user) => normalized.includes(user.email.toLowerCase())),
-  );
-  if (taken) {
-    return {
-      ok: false,
-      code: "duplicate_email",
-      message: "A user with this email already exists",
-    };
-  }
-
-  return null;
-}
-
-function createAdminUser(
-  email: string,
-  organizationId: string,
-  userNumber: number,
-): OrganizationUser {
-  const normalized = email.trim().toLowerCase();
-  return {
-    id: `user-${userNumber}`,
-    name: displayNameFromEmail(normalized),
-    email: normalized,
-    role: "admin",
-    organizationId,
-  };
-}
-
-function cloneOrganizations(initial: readonly Organization[]): Organization[] {
-  return initial.map((organization) => ({
-    ...organization,
-    users: organization.users.map((user) => ({ ...user })),
-    createdBy: { ...organization.createdBy },
-  }));
-}
-
-function slugify(value: string): string {
-  const slug = value
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  return slug || "organization";
 }
 
 /** Shared in-memory organisation directory for Sales screens. */

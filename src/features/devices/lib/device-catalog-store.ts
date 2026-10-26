@@ -68,6 +68,24 @@ export function createDeviceCatalogStore(
     },
 
     /**
+     * Replaces the fleet and rebuilds install logs. Used by the First time /
+     * Populated header switch.
+     *
+     * @param nextDevices - Devices that should become the live fleet
+     * @param nextReleases - Catalog used to seed each device's log
+     */
+    replace(
+      nextDevices: readonly WorldDevice[],
+      nextReleases: readonly FirmwareRelease[] = initialReleases,
+    ): void {
+      devices = nextDevices.map((device) => ({ ...device }));
+      logs = Object.fromEntries(
+        devices.map((device) => [device.id, buildDeviceFirmwareLog(device, nextReleases)]),
+      );
+      emit();
+    },
+
+    /**
      * Registers a device and keeps a hospital token.
      * A code supplied by the caller is stored as shown. Otherwise a new
      * five-digit token is generated.

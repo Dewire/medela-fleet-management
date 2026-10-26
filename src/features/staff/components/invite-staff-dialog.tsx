@@ -4,35 +4,28 @@ import { Mail } from "lucide-react";
 import { useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { ORGANIZATION_USER_ROLE_OPTIONS } from "@/features/organizations/constants";
-import { useOrganizations } from "@/features/organizations/hooks/use-organizations";
-import {
-  canInviteDirectoryUser,
-  parseDirectoryInvite,
-} from "@/features/organizations/lib/can-invite-directory-user";
-import { displayNameFromEmail } from "@/features/organizations/lib/display-name-from-email";
-import type { OrganizationUserRole } from "@/features/organizations/types";
 import { FormField } from "@/features/shell/form-field";
 import { NativeSelect } from "@/features/shell/native-select";
 import { PrimaryActionButton } from "@/features/shell/primary-action-button";
+import { MEDELA_STAFF_ROLE_OPTIONS } from "@/features/staff/constants";
+import { useStaff } from "@/features/staff/hooks/use-staff";
+import { canInviteStaffUser, parseStaffInvite } from "@/features/staff/lib/can-invite-staff-user";
+import { parseStaffRole } from "@/features/staff/lib/parse-staff-role";
+import type { MedelaStaffRole } from "@/features/staff/types";
 
 /**
- * Invites one hospital user from the Internal directory.
+ * Invites one Medela staff person from the Internal Users list.
  */
-export function InviteDirectoryUserDialog() {
+export function InviteStaffDialog() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
-  const { organizations, addUser } = useOrganizations();
+  const { addUser } = useStaff();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<OrganizationUserRole>("user");
-  const [organizationId, setOrganizationId] = useState("");
+  const [role, setRole] = useState<MedelaStaffRole>("admin");
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
-  const canSend = canInviteDirectoryUser({ email, role, organizationId });
-  const hospitalOptions = [
-    ["", "Choose a hospital"],
-    ...organizations.map((organization) => [organization.id, organization.name] as const),
-  ] as const;
+  const canSend = canInviteStaffUser({ name, email, role });
 
   function open() {
     const dialog = dialogRef.current;
@@ -45,26 +38,22 @@ export function InviteDirectoryUserDialog() {
   }
 
   function reset() {
+    setName("");
     setEmail("");
-    setRole("user");
-    setOrganizationId("");
+    setRole("admin");
     setError(null);
     setSentTo(null);
   }
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const parsed = parseDirectoryInvite({ email, role, organizationId });
+    const parsed = parseStaffInvite({ name, email, role });
     if (!parsed.ok) {
       setError(parsed.message);
       return;
     }
 
-    const result = addUser(parsed.value.organizationId, {
-      name: displayNameFromEmail(parsed.value.email),
-      email: parsed.value.email,
-      role: parsed.value.role,
-    });
+    const result = addUser(parsed.value);
     if (!result.ok) {
       setError(result.message);
       return;
@@ -113,26 +102,26 @@ export function InviteDirectoryUserDialog() {
               </p>
             </div>
             <FormField
+              label="Name"
+              name="name"
+              placeholder="Sam Rivera"
+              value={name}
+              onChange={setName}
+            />
+            <FormField
               label="Email"
               name="email"
               type="email"
-              placeholder="sam@hospital.org"
+              placeholder="sam.rivera@medela.com"
               value={email}
               onChange={setEmail}
-            />
-            <NativeSelect
-              label="Hospital"
-              name="organizationId"
-              value={organizationId}
-              onChange={setOrganizationId}
-              options={hospitalOptions}
             />
             <NativeSelect
               label="Role"
               name="role"
               value={role}
-              onChange={(value) => setRole(value === "admin" ? "admin" : "user")}
-              options={ORGANIZATION_USER_ROLE_OPTIONS}
+              onChange={(value) => setRole(parseStaffRole(value))}
+              options={MEDELA_STAFF_ROLE_OPTIONS}
             />
             {error ? (
               <p role="alert" className="text-sm text-destructive">

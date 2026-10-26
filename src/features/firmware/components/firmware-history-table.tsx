@@ -36,7 +36,9 @@ export function FirmwareHistoryTable() {
         </span>
       }
     >
-      {rows.length === 0 ? (
+      {releases.length === 0 ? (
+        <GroupedListEmpty>No releases yet</GroupedListEmpty>
+      ) : rows.length === 0 ? (
         <GroupedListEmpty>No releases match</GroupedListEmpty>
       ) : (
         rows.map((release, index) => (

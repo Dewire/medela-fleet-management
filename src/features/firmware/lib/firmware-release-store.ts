@@ -38,6 +38,16 @@ export function createFirmwareReleaseStore(
     },
 
     /**
+     * Replaces the catalog. Used by the First time / Populated header switch.
+     *
+     * @param next - Releases that should become the live catalog
+     */
+    replace(next: readonly FirmwareRelease[]): void {
+      releases = next.map((release) => ({ ...release }));
+      emit();
+    },
+
+    /**
      * Prepends a published release and notifies subscribers.
      *
      * @param input - Validated publish-form fields

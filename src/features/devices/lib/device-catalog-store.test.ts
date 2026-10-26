@@ -131,6 +131,18 @@ describe("createDeviceCatalogStore", () => {
     expect(result).toMatchObject({ ok: true, device: { registrationCode: "48291" } });
   });
 
+  it("replaces the fleet and rebuilds logs", () => {
+    const store = createDeviceCatalogStore([device], releases);
+    store.replace([]);
+
+    expect(store.getSnapshot()).toEqual({ devices: [], logs: {} });
+
+    store.replace([device], releases);
+
+    expect(store.getSnapshot().devices).toHaveLength(1);
+    expect(store.getSnapshot().logs["KF-1"]?.[0]?.version).toBe("v2.3.1");
+  });
+
   it("rejects a hospital token that is already in use", () => {
     const existing = { ...device, registrationCode: "48291" };
     const store = createDeviceCatalogStore([existing], releases);

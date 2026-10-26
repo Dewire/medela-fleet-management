@@ -6,7 +6,7 @@ import { useState } from "react";
 import { getAccountUser } from "@/features/account/lib/current-user";
 import { InviteUserDialog } from "@/features/biomed/components/invite-user-dialog";
 import { BIOMED_ORGANIZATION } from "@/features/biomed/constants";
-import { isHospitalAdmin } from "@/features/biomed/lib/is-hospital-admin";
+import { canManageHospitalUsers } from "@/features/biomed/lib/can-manage-hospital-users";
 import {
   ORGANIZATION_USER_ROLE_LABELS,
   ORGANIZATION_USER_ROLE_OPTIONS,
@@ -25,7 +25,8 @@ export function BiomedUserList() {
   const { organizations, setUserRole } = useOrganizations();
   const hospital = organizations.find((item) => item.id === BIOMED_ORGANIZATION.id);
   const users = hospital?.users ?? [];
-  const isAdmin = isHospitalAdmin(users, getAccountUser("biomed").email);
+  const biomedAccount = getAccountUser("biomed");
+  const isAdmin = canManageHospitalUsers(users, biomedAccount.email, biomedAccount.email);
   const [error, setError] = useState<string | null>(null);
 
   if (!isAdmin) {

@@ -8,6 +8,7 @@ Fleet inventory and status chips for Medela Internal staff.
 - `filterWorldDevices` — table status and search
 - `availableFirmwareUpdates` — installable packages for a device (dropdown on the detail card)
 - `recommendedFirmwareUpdate` — newest package newer than what is already installed. `Not installed` is older than any real version.
+- `noInstallableFirmwareMessage` — update-card copy when nothing can be offered. Only a parseable installed version is called latest.
 - `deviceCatalogStore` — live fleet and per-device install logs
 - `deviceCatalogStore.addDevice` — Biomed registration with a five-digit token, or a token the caller already showed
 - `generateRegistrationCode` — unique five-digit token generation
@@ -22,7 +23,7 @@ Fleet inventory and status chips for Medela Internal staff.
 
 `DeviceListToolbar` composes the shell's search field and status segmented control. `DeviceListEmpty` turns a `suggestFilterRelaxation` result into a one-click way out.
 
-The `/internal` page wraps `AppShell fill fleetNav`. Feature screens return list content only. Filters and rows share a `GroupedList` card so only the rows scroll. The Devices tab count follows the list filters via `fleetNavCountStore`. `/internal/devices` redirects here, including a `?status=` filter. Device rows still open `/internal/devices/[id]`. Identity and the next firmware share one card; firmware history is a second card with the title separated from the rows. History rows use the same uploader credit as the firmware catalog, with notes shortened to the first clause. Device detail uses the shell `DefinitionList` for model and firmware.
+The `/internal` page wraps `AppShell fill fleetNav`. Feature screens return list content only. Filters and rows share a `GroupedList` card so only the rows scroll. The Devices tab count follows the list filters via `fleetNavCountStore` when the list is open, and uses the catalog size on the other fleet tabs. `/internal/devices` redirects here, including a `?status=` filter. Device rows still open `/internal/devices/[id]`. Identity and the next firmware share one card; firmware history is a second card with the title separated from the rows. History rows use the same uploader credit as the firmware catalog, with notes shortened to the first clause. Device detail uses the shell `DefinitionList` for model and firmware.
 
 The `/biomed` list reads the same live catalog but only shows devices carrying
 the fixture organisation ID. Six St Mary's devices are part of that catalog,

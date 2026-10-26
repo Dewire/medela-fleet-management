@@ -5,10 +5,10 @@ Release history and the publish form.
 ## How to use
 
 - `/internal/firmware` — history table
-- `/internal/firmware/upload` — publish form; Publish Update prepends a release and returns to history
+- `/internal/firmware/upload` — publish form, opened from the yellow **Upload firmware** button on Devices or Firmware history. A back link returns to the tab that opened it (`?from=`). Publish Update prepends a release and returns to history.
 - `/internal/firmware/[version]?deviceType=` — read-only detail (version is not unique without device type). The card under the notes says who uploaded the release.
 
-The history and upload **pages** wrap `AppShell fleetNav` so Devices / Firmware history / Upload firmware sit in the same slot. List pages also pass `fill` so only the rows scroll. Feature screens return content only.
+The history **page** wraps `AppShell fleetNav` so Devices / Firmware history / Users sit in the same slot. Upload is a form page with a back link, not a tab. List pages also pass `fill` so only the rows scroll. Feature screens return content only.
 
 History has a search field (`filterFirmwareReleases` matches version, notes, and uploader). Rows show notes and **Uploaded by:** plus the staff name in bold (`FirmwareHistorySubtitle`, also used on a device's install history). There is no sort control; history is already newest-first.
 
