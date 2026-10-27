@@ -11,12 +11,12 @@ Prototype hospital workspace for device registration.
 
 The list starts with six St Mary's devices in the device catalog: two current on `v2.4.0`, one on an older release, one whose last update failed, and two with no firmware installed. Those fixtures stay across a reload. `KF-2026-38977` is one of the devices with no firmware installed.
 
-The modal issues a unique five-digit token, asks for that code to be entered on the device's Wi-Fi screen, then simulates a cloud check. About one in four checks fails. A device is written to `deviceCatalogStore` only after a successful check, assigned to the active Biomed organisation, with firmware `Not installed` and status `needs-update`.
+The modal issues a unique token in the `EU-K7M2Q9XR4DP` format, asks for that code to be entered on the device's Wi-Fi screen, then simulates a cloud check. About one in four checks fails. A device is written to `deviceCatalogStore` only after a successful check, assigned to the active Biomed organisation, with firmware `Not installed` and status `needs-update`.
 
 ## Gotchas
 
 - Devices added during a session, and their tokens, reset on a full page reload. The seeded St Mary's devices do not.
-- Tokens are five-digit prototype codes, not credentials or security secrets.
+- Tokens look like `EU-K7M2Q9XR4DP`. They are prototype codes, not credentials or security secrets.
 - Closing the modal before a successful check discards the token. **Try again** reuses the same token.
 - The Biomed fixture is currently tied to St Mary's Hospital.
 - Invited users are stored in the organisation directory. The confirmation is a prototype message; no email is sent. They disappear on a full page reload, along with other session changes.

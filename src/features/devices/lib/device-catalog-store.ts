@@ -10,7 +10,11 @@ import type {
 } from "../types";
 import { applyDeviceFirmwareUpdate } from "./apply-device-update";
 import { buildDeviceFirmwareLog } from "./device-firmware-log";
-import { generateRegistrationCode } from "./generate-registration-code";
+import {
+  generateRegistrationCode,
+  isRegistrationCode,
+  REGISTRATION_CODE_EXAMPLE,
+} from "./generate-registration-code";
 
 export type DeviceCatalogSnapshot = {
   devices: WorldDevice[];
@@ -88,7 +92,7 @@ export function createDeviceCatalogStore(
     /**
      * Registers a device and keeps a hospital token.
      * A code supplied by the caller is stored as shown. Otherwise a new
-     * five-digit token is generated.
+     * `EU-K7M2Q9XR4DP` token is generated.
      *
      * @param input - Device identity plus its organisation context
      * @param random - Random source used only when no token is supplied
@@ -156,11 +160,11 @@ function resolveRegistrationCode(
   random: () => number,
 ): { ok: true; value: string } | Exclude<RegisterDeviceResult, { ok: true }> {
   if (provided !== undefined) {
-    if (!/^\d{5}$/.test(provided)) {
+    if (!isRegistrationCode(provided)) {
       return {
         ok: false,
         code: "invalid_code",
-        message: "Hospital token must be five digits",
+        message: `Hospital token must look like ${REGISTRATION_CODE_EXAMPLE}`,
       };
     }
     if (existing.has(provided)) {

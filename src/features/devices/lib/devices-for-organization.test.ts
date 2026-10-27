@@ -14,7 +14,7 @@ const devices: WorldDevice[] = [
     firmware: "Not installed",
     model: "Queen",
     organizationId: "st-marys-hospital",
-    registrationCode: "ABCDE",
+    registrationCode: "EU-K7M2Q9XR4DP",
   },
   {
     id: "KF-2",

@@ -66,7 +66,7 @@ Authenticated **pages** wrap `AppShell`. Feature screens return content only.
 - Fixture identities come from `getAccountUser(role)`.
 - Organisation, staff, device, and firmware mutations live in module-scoped
   stores and vanish on reload.
-- Device hospital tokens are five-digit prototype codes, not secrets.
+- Device hospital tokens look like `EU-K7M2Q9XR4DP`. They are prototype codes, not secrets.
 - The publish dropzone is visual only; Zod validates the form fields.
 
 Unused list menus, dialogs, and unused shadcn table/select/badge primitives were removed on purpose. Do not treat that as a missing backlog — rebuild them when a screen needs them.

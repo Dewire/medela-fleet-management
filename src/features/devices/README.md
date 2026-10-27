@@ -10,8 +10,8 @@ Fleet inventory and status chips for Medela Internal staff.
 - `recommendedFirmwareUpdate` — newest package newer than what is already installed. `Not installed` is older than any real version.
 - `noInstallableFirmwareMessage` — update-card copy when nothing can be offered. Only a parseable installed version is called latest.
 - `deviceCatalogStore` — live fleet and per-device install logs
-- `deviceCatalogStore.addDevice` — Biomed registration with a five-digit token, or a token the caller already showed
-- `generateRegistrationCode` — unique five-digit token generation
+- `deviceCatalogStore.addDevice` — Biomed registration with an `EU-K7M2Q9XR4DP` token, or a token the caller already showed
+- `generateRegistrationCode` — unique `EU-` hospital token generation
 - `StatusChip` — use anywhere a device status appears
 
 ### Filter state

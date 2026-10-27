@@ -18,7 +18,7 @@ export type WorldDevice = {
   model: string;
   /** Customer organisation that registered the device, when known. */
   organizationId?: string;
-  /** Five-digit hospital token issued during prototype registration. */
+  /** Hospital token in `EU-K7M2Q9XR4DP` format, issued during prototype registration. */
   registrationCode?: string;
 };
 

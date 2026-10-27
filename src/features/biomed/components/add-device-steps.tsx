@@ -171,17 +171,12 @@ function TokenPanel({ code }: { code: string }) {
       <p className="text-xs font-semibold tracking-[0.12em] text-brand-ink/70 uppercase">
         Hospital token
       </p>
-      <div className="flex gap-2.5" aria-label={`Hospital token ${code}`}>
-        {code.split("").map((digit, index) => (
-          <span
-            key={`${code}-${index}`}
-            aria-hidden="true"
-            className="flex h-16 w-13 items-center justify-center rounded-xl border border-black/8 bg-card text-3xl font-semibold text-foreground tabular-nums shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
-          >
-            {digit}
-          </span>
-        ))}
-      </div>
+      <p
+        aria-label={`Hospital token ${code}`}
+        className="rounded-xl border border-black/8 bg-card px-5 py-4 font-mono text-2xl font-semibold tracking-[0.14em] text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.06)]"
+      >
+        {code}
+      </p>
     </div>
   );
 }
@@ -212,7 +207,7 @@ function ResultRow({ label, value, mono = false }: { label: string; value: strin
   return (
     <div className="flex items-baseline justify-between gap-4 px-4 py-3">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className={`font-medium text-foreground ${mono ? "tracking-[0.12em] tabular-nums" : ""}`}>{value}</dd>
+      <dd className={`font-medium text-foreground ${mono ? "font-mono tracking-[0.08em]" : ""}`}>{value}</dd>
     </div>
   );
 }
